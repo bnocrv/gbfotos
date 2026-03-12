@@ -13,11 +13,37 @@ const nextLayer = document.querySelector(".photo-layer--next");
 
 const THEME_KEY = "gabriel-silva-theme";
 const AUTOPLAY_DELAY = 5000;
-const TRANSITION_DURATION = 1900;
+const TRANSITION_DURATION = 2100;
 
 let currentIndex = 0;
 let autoplayId = null;
 let isTransitioning = false;
+
+function waitForNextFrame() {
+  return new Promise((resolve) => {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(resolve);
+    });
+  });
+}
+
+async function prepareImage(img, src, alt) {
+  img.src = src;
+  img.alt = alt;
+
+  if (img.complete) {
+    return;
+  }
+
+  try {
+    await img.decode();
+  } catch (_) {
+    await new Promise((resolve) => {
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+    });
+  }
+}
 
 function applyTheme(theme) {
   root.setAttribute("data-theme", theme);
@@ -42,7 +68,7 @@ function primeStage() {
   nextLayer.src = slides[(currentIndex + 1) % slides.length];
 }
 
-function showSlide(targetIndex) {
+async function showSlide(targetIndex) {
   if (isTransitioning) {
     return;
   }
@@ -50,8 +76,17 @@ function showSlide(targetIndex) {
   const nextIndex = (targetIndex + slides.length) % slides.length;
   isTransitioning = true;
 
-  nextLayer.src = slides[nextIndex];
-  nextLayer.alt = `Fotografia ${nextIndex + 1} de Gabriel Silva`;
+  await prepareImage(
+    nextLayer,
+    slides[nextIndex],
+    `Fotografia ${nextIndex + 1} de Gabriel Silva`
+  );
+
+  photoStage.classList.remove("is-transitioning");
+  photoStage.classList.remove("is-flashing");
+  void photoStage.offsetWidth;
+  await waitForNextFrame();
+
   photoStage.classList.add("is-flashing");
   photoStage.classList.add("is-transitioning");
 
