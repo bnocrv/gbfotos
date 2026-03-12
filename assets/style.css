@@ -164,8 +164,8 @@ body::after {
 
 .theme-toggle {
   position: fixed;
-  top: 18px;
-  right: 18px;
+  top: calc(env(safe-area-inset-top, 0px) + 18px);
+  right: calc(env(safe-area-inset-right, 0px) + 18px);
   z-index: 3;
   display: inline-grid;
   place-items: center;
@@ -198,18 +198,18 @@ body::after {
 .site-footer {
   position: relative;
   z-index: 1;
-  margin-top: 26px;
-  padding: 0 1rem 36px;
+  margin-top: 2px;
+  padding: 0 1rem 10px;
 }
 
 .site-footer__inner {
   width: min(1100px, 100%);
   margin: 0 auto;
-  padding: 22px 24px 0;
+  padding: 8px 20px 0;
   border-top: 1px solid var(--line);
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 2px;
 }
 
 .site-footer__copyright,
@@ -254,27 +254,27 @@ body::after {
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 14px;
+  gap: 8px;
   justify-items: center;
   align-content: start;
-  padding: 18px 0 8px;
+  padding: 10px 0 4px;
 }
 
 .identity {
   position: relative;
   display: grid;
-  gap: 18px;
+  gap: 10px;
   align-content: center;
   justify-items: center;
   text-align: center;
-  padding: 8px 0 4px;
+  padding: 2px 0;
 }
 
 .avatar-chip {
-  width: 88px;
-  height: 88px;
-  padding: 5px;
-  border-radius: 28px;
+  width: 74px;
+  height: 74px;
+  padding: 4px;
+  border-radius: 22px;
   border: 1px solid var(--line);
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 45%),
@@ -287,21 +287,21 @@ body::after {
   height: 100%;
   display: block;
   object-fit: cover;
-  border-radius: 22px;
+  border-radius: 18px;
 }
 
 .role {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.68rem;
   text-transform: uppercase;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.22em;
   color: var(--muted);
 }
 
 .identity h1 {
   margin: 0;
   font-family: "PT Sans Narrow", sans-serif;
-  font-size: clamp(3rem, 6.2vw, 5.2rem);
+  font-size: clamp(2.15rem, 4.8vw, 3.8rem);
   line-height: 0.92;
   letter-spacing: -0.03em;
   max-width: none;
@@ -328,12 +328,12 @@ body::after {
 
 .bio {
   margin: 0;
-  max-width: 40ch;
+  max-width: 92ch;
   color: var(--muted);
   font-family: "Abel", sans-serif;
-  font-size: 1rem;
-  line-height: 1.42;
-  letter-spacing: 0.01em;
+  font-size: 0.78rem;
+  line-height: 1.14;
+  letter-spacing: 0;
   text-wrap: balance;
 }
 
@@ -342,8 +342,8 @@ body::after {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin-top: 8px;
+  gap: 10px;
+  margin-top: 0;
   width: auto;
 }
 
@@ -352,11 +352,11 @@ body::after {
   align-items: center;
   justify-content: center;
   gap: 0;
-  width: 58px;
-  height: 58px;
-  min-height: 58px;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
   padding: 0;
-  border-radius: 18px;
+  border-radius: 14px;
   border: 1px solid var(--line);
   background:
     linear-gradient(120deg, rgba(255, 255, 255, 0.05), transparent 52%),
@@ -374,24 +374,59 @@ body::after {
   box-shadow: 0 20px 48px var(--accent-soft);
 }
 
-.action-button svg {
+.action-button img {
   width: 20px;
   height: 20px;
   flex: 0 0 auto;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.7;
+  display: block;
+  object-fit: contain;
 }
 
 .visual-stage {
   position: relative;
   width: 100%;
-  min-height: 640px;
+  min-height: 480px;
   display: grid;
   place-items: center;
   isolation: isolate;
+}
+
+.gallery-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(10, 10, 18, 0.28);
+  color: var(--text);
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, opacity 180ms ease;
+}
+
+.gallery-arrow:hover {
+  border-color: var(--accent);
+  background: rgba(10, 10, 18, 0.44);
+}
+
+.gallery-arrow span {
+  display: block;
+  font-size: 1.35rem;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.gallery-arrow--prev {
+  left: max(6px, calc(50% - 300px));
+}
+
+.gallery-arrow--next {
+  right: max(6px, calc(50% - 300px));
 }
 
 .visual-stage::before,
@@ -459,10 +494,8 @@ body::after {
 
 .photo-stage {
   position: relative;
-  width: min(72vw, 620px);
+  width: min(64vw, 480px);
   aspect-ratio: 1 / 1;
-  border: 0;
-  padding: 0;
   background: transparent;
   cursor: pointer;
   z-index: 1;
@@ -501,6 +534,7 @@ body::after {
 }
 
 .photo-stage:focus-visible,
+.gallery-arrow:focus-visible,
 .theme-toggle:focus-visible,
 .action-button:focus-visible {
   outline: 2px solid var(--accent);
@@ -515,6 +549,7 @@ body::after {
   filter: blur(34px);
   transform: translateY(40px) scale(1.04);
   opacity: 0.9;
+  pointer-events: none;
 }
 
 .photo-stage__glow {
@@ -526,6 +561,7 @@ body::after {
     radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.18), transparent 26%);
   filter: blur(30px);
   animation: pulse 7s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .photo-stage__noise {
@@ -542,6 +578,7 @@ body::after {
   mix-blend-mode: soft-light;
   opacity: 0.18;
   animation: scan 8s linear infinite;
+  pointer-events: none;
 }
 
 .photo-stage__veil {
@@ -609,6 +646,7 @@ body::after {
   user-select: none;
   -webkit-user-drag: none;
   backface-visibility: hidden;
+  pointer-events: none;
   transition:
     opacity 1900ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 1900ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -871,7 +909,7 @@ body::after {
 
 @media (max-width: 980px) {
   .layout {
-    padding-top: 34px;
+    padding-top: 20px;
   }
 
   .identity {
@@ -883,12 +921,20 @@ body::after {
   }
 
   .visual-stage {
-    min-height: 0;
+    min-height: 360px;
     justify-items: center;
   }
 
+  .gallery-arrow--prev {
+    left: 8px;
+  }
+
+  .gallery-arrow--next {
+    right: 8px;
+  }
+
   .photo-stage {
-    width: min(100%, 560px);
+    width: min(100%, 420px);
     transform:
       translate3d(var(--float-x), var(--float-y), 0)
       perspective(1200px)
@@ -900,28 +946,40 @@ body::after {
 @media (max-width: 640px) {
   .layout {
     width: min(100% - 1rem, 100%);
-    gap: 14px;
-    padding-top: 24px;
-    padding-bottom: 20px;
+    gap: 8px;
+    padding-top: 14px;
+    padding-bottom: 12px;
   }
 
   .theme-toggle {
-    top: 12px;
-    right: 12px;
+    top: calc(env(safe-area-inset-top, 0px) + 10px);
+    right: auto;
+    left: calc(env(safe-area-inset-left, 0px) + 10px);
+    width: 38px;
+    height: 38px;
   }
 
   .identity h1 {
-    font-size: clamp(2.15rem, 10.8vw, 3.55rem);
+    font-size: clamp(1.8rem, 8.8vw, 2.6rem);
   }
 
   .action-button {
-    width: 56px;
-    height: 56px;
-    min-height: 56px;
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .gallery-arrow {
+    width: 34px;
+    height: 34px;
+  }
+
+  .gallery-arrow span {
+    font-size: 1.15rem;
   }
 
   .photo-stage {
-    width: 100%;
+    width: min(100%, 320px);
   }
 
   .photo-layer {

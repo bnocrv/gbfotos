@@ -1,49 +1,22 @@
-const landscapeIndexes = new Set([0, 2, 4, 13, 19, 26]);
-
-const slides = Array.from({ length: 27 }, (_, index) => {
-  const prefix = landscapeIndexes.has(index) ? "p" : "r";
-  return `./assets/fotos/${prefix}foto-${index}.jpeg`;
-});
+const slides = Array.from({ length: 27 }, (_, index) => `./assets/fotos/${index}.jpeg`);
 
 const root = document.documentElement;
 const themeToggle = document.querySelector(".theme-toggle");
 const photoStage = document.querySelector(".photo-stage");
 const currentLayer = document.querySelector(".photo-layer--current");
 const nextLayer = document.querySelector(".photo-layer--next");
+const prevArrow = document.querySelector(".gallery-arrow--prev");
+const nextArrow = document.querySelector(".gallery-arrow--next");
 
 const THEME_KEY = "gabriel-silva-theme";
 const AUTOPLAY_DELAY = 5000;
-const TRANSITION_DURATION = 2100;
+const TRANSITION_DURATION = 950;
 
 let currentIndex = 0;
 let autoplayId = null;
+let transitionFallbackId = null;
 let isTransitioning = false;
-
-function waitForNextFrame() {
-  return new Promise((resolve) => {
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(resolve);
-    });
-  });
-}
-
-async function prepareImage(img, src, alt) {
-  img.src = src;
-  img.alt = alt;
-
-  if (img.complete) {
-    return;
-  }
-
-  try {
-    await img.decode();
-  } catch (_) {
-    await new Promise((resolve) => {
-      img.onload = () => resolve();
-      img.onerror = () => resolve();
-    });
-  }
-}
+let pendingSteps = 0;
 
 function applyTheme(theme) {
   root.setAttribute("data-theme", theme);
@@ -62,51 +35,71 @@ function loadTheme() {
   applyTheme(prefersDark ? "dark" : "light");
 }
 
-function primeStage() {
-  currentLayer.src = slides[currentIndex];
-  currentLayer.alt = `Fotografia ${currentIndex + 1} de Gabriel Silva`;
-  nextLayer.src = slides[(currentIndex + 1) % slides.length];
+function updateStage(index) {
+  currentLayer.src = slides[index];
+  currentLayer.alt = `Fotografia ${index + 1} de Gabriel Silva`;
 }
 
-async function showSlide(targetIndex) {
+function preloadImage(index) {
+  const img = new Image();
+  img.src = slides[(index + slides.length) % slides.length];
+}
+
+function finalizeTransition(nextIndex) {
+  window.clearTimeout(transitionFallbackId);
+  photoStage.classList.remove("is-transitioning");
+  photoStage.classList.remove("is-flashing");
+  updateStage(nextIndex);
+  currentIndex = nextIndex;
+  isTransitioning = false;
+
+  preloadImage(currentIndex + 1);
+
+  if (pendingSteps !== 0) {
+    const step = pendingSteps > 0 ? 1 : -1;
+    pendingSteps -= step;
+    runSlide(step);
+  }
+}
+
+function runSlide(step) {
   if (isTransitioning) {
+    pendingSteps += step;
     return;
   }
 
-  const nextIndex = (targetIndex + slides.length) % slides.length;
-  isTransitioning = true;
+  const nextIndex = (currentIndex + step + slides.length) % slides.length;
+  const nextSrc = slides[nextIndex];
 
-  await prepareImage(
-    nextLayer,
-    slides[nextIndex],
-    `Fotografia ${nextIndex + 1} de Gabriel Silva`
-  );
+  isTransitioning = true;
+  nextLayer.src = nextSrc;
+  nextLayer.alt = `Fotografia ${nextIndex + 1} de Gabriel Silva`;
 
   photoStage.classList.remove("is-transitioning");
   photoStage.classList.remove("is-flashing");
   void photoStage.offsetWidth;
-  await waitForNextFrame();
 
-  photoStage.classList.add("is-flashing");
-  photoStage.classList.add("is-transitioning");
+  window.requestAnimationFrame(() => {
+    photoStage.classList.add("is-flashing");
+    photoStage.classList.add("is-transitioning");
+  });
 
-  window.setTimeout(() => {
-    currentLayer.src = slides[nextIndex];
-    currentLayer.alt = nextLayer.alt;
-    currentIndex = nextIndex;
-    photoStage.classList.remove("is-transitioning");
-    photoStage.classList.remove("is-flashing");
-    isTransitioning = false;
+  transitionFallbackId = window.setTimeout(() => {
+    finalizeTransition(nextIndex);
   }, TRANSITION_DURATION);
 }
 
-function showNextSlide() {
-  showSlide(currentIndex + 1);
+function nextSlide() {
+  runSlide(1);
+}
+
+function previousSlide() {
+  runSlide(-1);
 }
 
 function restartAutoplay() {
   window.clearInterval(autoplayId);
-  autoplayId = window.setInterval(showNextSlide, AUTOPLAY_DELAY);
+  autoplayId = window.setInterval(nextSlide, AUTOPLAY_DELAY);
 }
 
 function bindThemeToggle() {
@@ -118,7 +111,29 @@ function bindThemeToggle() {
 
 function bindStageInteraction() {
   photoStage.addEventListener("click", () => {
-    showNextSlide();
+    nextSlide();
+    restartAutoplay();
+  });
+
+  photoStage.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+
+    event.preventDefault();
+    nextSlide();
+    restartAutoplay();
+  });
+
+  prevArrow.addEventListener("click", (event) => {
+    event.stopPropagation();
+    previousSlide();
+    restartAutoplay();
+  });
+
+  nextArrow.addEventListener("click", (event) => {
+    event.stopPropagation();
+    nextSlide();
     restartAutoplay();
   });
 
@@ -155,7 +170,9 @@ function bindStageInteraction() {
 }
 
 loadTheme();
-primeStage();
+updateStage(currentIndex);
+nextLayer.src = slides[1];
+preloadImage(1);
 bindThemeToggle();
 bindStageInteraction();
 restartAutoplay();
