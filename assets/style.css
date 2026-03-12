@@ -46,6 +46,9 @@ body {
 
 body {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
   overflow-x: hidden;
   background:
     radial-gradient(circle at 12% 10%, var(--accent-soft), transparent 24%),
@@ -197,15 +200,16 @@ body::after {
 
 .site-footer {
   position: relative;
+  flex-shrink: 0;
   z-index: 1;
-  margin-top: 2px;
-  padding: 0 1rem 10px;
+  margin-top: auto;
+  padding: 0 1rem 4px;
 }
 
 .site-footer__inner {
   width: min(1100px, 100%);
   margin: 0 auto;
-  padding: 8px 20px 0;
+  padding: 2px 20px 0;
   border-top: 1px solid var(--line);
   display: grid;
   justify-items: center;
@@ -248,13 +252,14 @@ body::after {
 
 .layout {
   position: relative;
+  flex: 1 0 auto;
   z-index: 1;
   width: min(1240px, calc(100% - 2rem));
   min-height: auto;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: 0;
   justify-items: center;
   align-content: start;
   padding: 10px 0 4px;
@@ -263,7 +268,7 @@ body::after {
 .identity {
   position: relative;
   display: grid;
-  gap: 10px;
+  gap: 4px;
   align-content: center;
   justify-items: center;
   text-align: center;
@@ -342,7 +347,7 @@ body::after {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   margin-top: 0;
   width: auto;
 }
@@ -385,10 +390,17 @@ body::after {
 .visual-stage {
   position: relative;
   width: 100%;
-  min-height: 480px;
+  min-height: 300px;
   display: grid;
   place-items: center;
   isolation: isolate;
+  margin-top: -110px;
+}
+
+@media (min-width: 641px) {
+  .visual-stage {
+    margin-top: -26px;
+  }
 }
 
 .gallery-arrow {
@@ -494,8 +506,8 @@ body::after {
 
 .photo-stage {
   position: relative;
-  width: min(86vw, 760px);
-  height: min(68vw, 500px);
+  width: min(92vw, 920px);
+  height: min(62vw, 520px);
   background: transparent;
   cursor: pointer;
   z-index: 1;
@@ -576,8 +588,8 @@ body::after {
 
 .coverflow-card {
   position: absolute;
-  width: min(34vw, 220px);
-  height: min(48vw, 320px);
+  width: min(46vw, 360px);
+  aspect-ratio: 1 / 1;
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -851,8 +863,8 @@ body::after {
   }
 
   .photo-stage {
-    width: min(100%, 620px);
-    height: 400px;
+    width: min(100%, 760px);
+    height: 540px;
     transform:
       translate3d(var(--float-x), var(--float-y), 0)
       perspective(1200px)
@@ -861,17 +873,17 @@ body::after {
   }
 
   .coverflow-card {
-    width: min(34vw, 200px);
-    height: min(48vw, 290px);
+    width: min(42vw, 290px);
   }
 }
 
 @media (max-width: 640px) {
   .layout {
+    flex: 1 0 auto;
     width: min(100% - 1rem, 100%);
     gap: 8px;
     padding-top: 14px;
-    padding-bottom: 12px;
+    padding-bottom: 4px;
   }
 
   .theme-toggle {
@@ -902,8 +914,12 @@ body::after {
   }
 
   .photo-stage {
-    width: min(100%, 360px);
-    height: 300px;
+    width: min(100%, 420px);
+    height: 360px;
+  }
+
+  .visual-stage {
+    margin-top: -28px;
   }
 
   .photo-stage::before,
@@ -917,9 +933,18 @@ body::after {
   }
 
   .coverflow-card {
-    width: 128px;
-    height: 188px;
+    width: 190px;
     border-radius: 6px;
+  }
+
+  .site-footer {
+    margin-top: 0;
+    padding: 0 1rem 4px;
+  }
+
+  .site-footer__inner {
+    padding: 4px 12px 0;
+    gap: 1px;
   }
 }
 
