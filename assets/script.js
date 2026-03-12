@@ -6,6 +6,10 @@ const photoStage = document.querySelector(".photo-stage");
 const prevArrow = document.querySelector(".gallery-arrow--prev");
 const nextArrow = document.querySelector(".gallery-arrow--next");
 const coverflowTrack = document.querySelector(".coverflow-track");
+const lightbox = document.querySelector(".lightbox");
+const lightboxImage = document.querySelector(".lightbox__image");
+const lightboxClose = document.querySelector(".lightbox__close");
+const lightboxBackdrop = document.querySelector(".lightbox__backdrop");
 
 const THEME_KEY = "gabriel-silva-theme";
 const AUTOPLAY_DELAY = 5000;
@@ -13,6 +17,11 @@ const AUTOPLAY_DELAY = 5000;
 let currentIndex = 0;
 let autoplayId = null;
 let cards = [];
+
+function stopAutoplay() {
+  window.clearInterval(autoplayId);
+  autoplayId = null;
+}
 
 function applyTheme(theme) {
   root.setAttribute("data-theme", theme);
@@ -62,16 +71,16 @@ function getCardStyle(relative) {
     return {
       opacity: "1",
       filter: "blur(0) brightness(1)",
-      transform: "translateX(0) translateZ(0) rotateY(0deg) scale(1)",
-      zIndex: "30",
+      transform: "translateX(0) translateZ(36px) rotateY(0deg) scale(1.16)",
+      zIndex: "40",
     };
   }
 
   if (abs === 1) {
     return {
-      opacity: "0.78",
-      filter: "blur(0.8px) brightness(0.78)",
-      transform: `translateX(${relative * 42}%) translateZ(-120px) rotateY(${relative < 0 ? 56 : -56}deg) scale(0.84)`,
+      opacity: "0.72",
+      filter: "blur(1px) brightness(0.72)",
+      transform: `translateX(${relative * 46}%) translateZ(-138px) rotateY(${relative < 0 ? 58 : -58}deg) scale(0.8)`,
       zIndex: "20",
     };
   }
@@ -79,7 +88,7 @@ function getCardStyle(relative) {
   return {
     opacity: "0.22",
     filter: "blur(2px) brightness(0.54)",
-    transform: `translateX(${relative * 58}%) translateZ(-240px) rotateY(${relative < 0 ? 68 : -68}deg) scale(0.72)`,
+    transform: `translateX(${relative * 64}%) translateZ(-260px) rotateY(${relative < 0 ? 68 : -68}deg) scale(0.68)`,
     zIndex: "10",
   };
 }
@@ -135,8 +144,28 @@ function previousSlide() {
 }
 
 function restartAutoplay() {
-  window.clearInterval(autoplayId);
+  stopAutoplay();
   autoplayId = window.setInterval(nextSlide, AUTOPLAY_DELAY);
+}
+
+function openLightbox() {
+  const src = slides[currentIndex];
+
+  lightboxImage.src = src;
+  lightboxImage.alt = `Fotografia ampliada ${currentIndex + 1} de Gabriel Silva`;
+  lightbox.classList.add("is-open");
+  lightbox.setAttribute("aria-hidden", "false");
+  document.body.classList.add("is-lightbox-open");
+  stopAutoplay();
+}
+
+function closeLightbox() {
+  lightbox.classList.remove("is-open");
+  lightbox.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("is-lightbox-open");
+  lightboxImage.removeAttribute("src");
+  lightboxImage.alt = "";
+  restartAutoplay();
 }
 
 function bindThemeToggle() {
@@ -148,8 +177,7 @@ function bindThemeToggle() {
 
 function bindStageInteraction() {
   photoStage.addEventListener("click", () => {
-    nextSlide();
-    restartAutoplay();
+    openLightbox();
   });
 
   photoStage.addEventListener("keydown", (event) => {
@@ -158,8 +186,7 @@ function bindStageInteraction() {
     }
 
     event.preventDefault();
-    nextSlide();
-    restartAutoplay();
+    openLightbox();
   });
 
   prevArrow.addEventListener("click", (event) => {
@@ -186,7 +213,7 @@ function bindStageInteraction() {
   });
 
   photoStage.addEventListener("mouseenter", () => {
-    window.clearInterval(autoplayId);
+    stopAutoplay();
   });
 
   photoStage.addEventListener("mouseleave", () => {
@@ -198,7 +225,7 @@ function bindStageInteraction() {
   });
 
   photoStage.addEventListener("touchstart", () => {
-    window.clearInterval(autoplayId);
+    stopAutoplay();
   });
 
   photoStage.addEventListener("touchend", () => {
@@ -206,8 +233,20 @@ function bindStageInteraction() {
   });
 }
 
+function bindLightbox() {
+  lightboxClose.addEventListener("click", closeLightbox);
+  lightboxBackdrop.addEventListener("click", closeLightbox);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && lightbox.classList.contains("is-open")) {
+      closeLightbox();
+    }
+  });
+}
+
 loadTheme();
 buildCoverflow();
 bindThemeToggle();
 bindStageInteraction();
+bindLightbox();
 restartAutoplay();
