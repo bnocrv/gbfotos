@@ -257,7 +257,8 @@ body::after {
   inset: 0;
   z-index: 20;
   display: grid;
-  place-items: center;
+  align-items: center;
+  justify-items: center;
   padding: 24px;
   opacity: 0;
   visibility: hidden;
@@ -284,8 +285,14 @@ body::after {
   position: relative;
   z-index: 1;
   margin: 0;
-  width: min(92vw, 980px);
+  width: auto;
+  max-width: min(92vw, 980px);
   max-height: min(84svh, 900px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  align-self: center;
   padding: 12px;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -297,9 +304,13 @@ body::after {
 
 .lightbox__image {
   display: block;
-  width: 100%;
+  width: auto;
+  height: auto;
+  max-width: calc(min(92vw, 980px) - 24px);
   max-height: calc(min(84svh, 900px) - 24px);
+  margin: 0 auto;
   object-fit: contain;
+  object-position: center center;
   border-radius: 12px;
 }
 
@@ -972,6 +983,30 @@ body::after {
 }
 
 @media (max-width: 640px) {
+  .lightbox {
+    align-items: center;
+    justify-items: center;
+    padding:
+      calc(env(safe-area-inset-top, 0px) + 12px)
+      calc(env(safe-area-inset-right, 0px) + 10px)
+      calc(env(safe-area-inset-bottom, 0px) + 12px)
+      calc(env(safe-area-inset-left, 0px) + 10px);
+  }
+
+  .lightbox__figure {
+    left: 50%;
+    width: fit-content;
+    max-width: calc(100vw - 20px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+    max-height: calc(100svh - 28px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    padding: 8px;
+    transform: translateX(-50%);
+  }
+
+  .lightbox__image {
+    max-width: calc(100vw - 36px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+    max-height: calc(100svh - 44px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  }
+
   .layout {
     width: min(100% - 1rem, 100%);
     height: 100%;
