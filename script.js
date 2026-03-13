@@ -10,6 +10,8 @@ const lightbox = document.querySelector(".lightbox");
 const lightboxImage = document.querySelector(".lightbox__image");
 const lightboxClose = document.querySelector(".lightbox__close");
 const lightboxBackdrop = document.querySelector(".lightbox__backdrop");
+const lightboxPrev = document.querySelector(".lightbox__nav--prev");
+const lightboxNext = document.querySelector(".lightbox__nav--next");
 
 const THEME_KEY = "gabriel-silva-theme";
 const AUTOPLAY_DELAY = 5000;
@@ -62,7 +64,7 @@ function getCardStyle(relative) {
     return {
       opacity: "0",
       filter: "blur(10px) brightness(0.45)",
-      transform: `translateX(${relative * 18}%) translateZ(-320px) rotateY(${relative < 0 ? 74 : -74}deg) scale(0.62)`,
+      transform: `translateX(${relative * 14}%) translateZ(-320px) rotateY(${relative < 0 ? 74 : -74}deg) scale(0.74)`,
       zIndex: "0",
     };
   }
@@ -71,7 +73,7 @@ function getCardStyle(relative) {
     return {
       opacity: "1",
       filter: "blur(0) brightness(1)",
-      transform: "translateX(0) translateZ(36px) rotateY(0deg) scale(1.16)",
+      transform: "translateX(0) translateZ(52px) rotateY(0deg) scale(1.46)",
       zIndex: "40",
     };
   }
@@ -80,7 +82,7 @@ function getCardStyle(relative) {
     return {
       opacity: "0.72",
       filter: "blur(1px) brightness(0.72)",
-      transform: `translateX(${relative * 46}%) translateZ(-138px) rotateY(${relative < 0 ? 58 : -58}deg) scale(0.8)`,
+      transform: `translateX(${relative * 34}%) translateZ(-138px) rotateY(${relative < 0 ? 58 : -58}deg) scale(0.98)`,
       zIndex: "20",
     };
   }
@@ -88,7 +90,7 @@ function getCardStyle(relative) {
   return {
     opacity: "0.22",
     filter: "blur(2px) brightness(0.54)",
-    transform: `translateX(${relative * 64}%) translateZ(-260px) rotateY(${relative < 0 ? 68 : -68}deg) scale(0.68)`,
+    transform: `translateX(${relative * 48}%) translateZ(-260px) rotateY(${relative < 0 ? 68 : -68}deg) scale(0.82)`,
     zIndex: "10",
   };
 }
@@ -149,14 +151,18 @@ function restartAutoplay() {
 }
 
 function openLightbox() {
-  const src = slides[currentIndex];
-
-  lightboxImage.src = src;
-  lightboxImage.alt = `Fotografia ampliada ${currentIndex + 1} de Gabriel Silva`;
+  syncLightboxImage();
   lightbox.classList.add("is-open");
   lightbox.setAttribute("aria-hidden", "false");
   document.body.classList.add("is-lightbox-open");
   stopAutoplay();
+}
+
+function syncLightboxImage() {
+  const src = slides[currentIndex];
+
+  lightboxImage.src = src;
+  lightboxImage.alt = `Fotografia ampliada ${currentIndex + 1} de Gabriel Silva`;
 }
 
 function closeLightbox() {
@@ -236,10 +242,36 @@ function bindStageInteraction() {
 function bindLightbox() {
   lightboxClose.addEventListener("click", closeLightbox);
   lightboxBackdrop.addEventListener("click", closeLightbox);
+  lightboxPrev.addEventListener("click", (event) => {
+    event.stopPropagation();
+    previousSlide();
+    syncLightboxImage();
+  });
+  lightboxNext.addEventListener("click", (event) => {
+    event.stopPropagation();
+    nextSlide();
+    syncLightboxImage();
+  });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && lightbox.classList.contains("is-open")) {
+    if (!lightbox.classList.contains("is-open")) {
+      return;
+    }
+
+    if (event.key === "Escape") {
       closeLightbox();
+      return;
+    }
+
+    if (event.key === "ArrowLeft") {
+      previousSlide();
+      syncLightboxImage();
+      return;
+    }
+
+    if (event.key === "ArrowRight") {
+      nextSlide();
+      syncLightboxImage();
     }
   });
 }

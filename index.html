@@ -14,7 +14,7 @@
     href="https://fonts.googleapis.com/css2?family=Abel&family=PT+Sans+Narrow:wght@400;700&family=Space+Grotesk:wght@400;500;700&display=swap"
     rel="stylesheet"
   >
-  <link rel="stylesheet" href="./assets/style.css">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <div class="grid-overlay"></div>
@@ -98,12 +98,18 @@
     <button class="lightbox__close" type="button" aria-label="Fechar foto ampliada">
       <span aria-hidden="true">×</span>
     </button>
+    <button class="lightbox__nav lightbox__nav--prev" type="button" aria-label="Foto anterior ampliada">
+      <span aria-hidden="true">â€¹</span>
+    </button>
+    <button class="lightbox__nav lightbox__nav--next" type="button" aria-label="Próxima foto ampliada">
+      <span aria-hidden="true">â€º</span>
+    </button>
     <div class="lightbox__backdrop"></div>
     <figure class="lightbox__figure">
       <img class="lightbox__image" src="" alt="">
     </figure>
   </div>
 
-  <script src="./assets/script.js"></script>
+  <script src="./script.js"></script>
 </body>
 </html>
