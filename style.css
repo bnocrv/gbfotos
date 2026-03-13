@@ -532,8 +532,8 @@ body::after {
 }
 
 .action-button img {
-  width: clamp(38px, 1.45vw, 32px);
-  height: clamp(38px, 1.45vw, 32px);
+  width: clamp(18px, 1.45vw, 22px);
+  height: clamp(18px, 1.45vw, 22px);
   flex: 0 0 auto;
   display: block;
   object-fit: contain;
@@ -1098,7 +1098,7 @@ body::after {
 
   .bio {
     max-width: min(64ch, calc(100% - 0.5rem));
-    font-size: clamp(1rem, 3vw, 2rem);
+    font-size: clamp(0.78rem, 1.55vw, 0.9rem);
   }
 
   .visual-stage {
@@ -1233,9 +1233,9 @@ body::after {
   }
 
   .action-button {
-    width: 78px;
-    height: 78px;
-    min-height: 78px;
+    width: 48px;
+    height: 48px;
+    min-height: 42px;
   }
 
   .gallery-arrow {
