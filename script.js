@@ -12,6 +12,7 @@ const lightboxClose = document.querySelector(".lightbox__close");
 const lightboxBackdrop = document.querySelector(".lightbox__backdrop");
 const lightboxPrev = document.querySelector(".lightbox__nav--prev");
 const lightboxNext = document.querySelector(".lightbox__nav--next");
+const siteAudio = document.querySelector(".site-audio");
 
 const THEME_KEY = "gabriel-silva-theme";
 const AUTOPLAY_DELAY = 5000;
@@ -19,10 +20,52 @@ const AUTOPLAY_DELAY = 5000;
 let currentIndex = 0;
 let autoplayId = null;
 let cards = [];
+let audioStarted = false;
 
 function stopAutoplay() {
   window.clearInterval(autoplayId);
   autoplayId = null;
+}
+
+function startSiteAudio() {
+  if (!siteAudio || audioStarted) {
+    return;
+  }
+
+  const playPromise = siteAudio.play();
+
+  if (playPromise && typeof playPromise.then === "function") {
+    playPromise
+      .then(() => {
+        audioStarted = true;
+      })
+      .catch(() => {
+        audioStarted = false;
+      });
+    return;
+  }
+
+  audioStarted = true;
+}
+
+function bindAudioAutoplay() {
+  startSiteAudio();
+
+  const unlockAudio = () => {
+    startSiteAudio();
+
+    if (!audioStarted) {
+      return;
+    }
+
+    document.removeEventListener("click", unlockAudio);
+    document.removeEventListener("touchstart", unlockAudio);
+    document.removeEventListener("keydown", unlockAudio);
+  };
+
+  document.addEventListener("click", unlockAudio);
+  document.addEventListener("touchstart", unlockAudio);
+  document.addEventListener("keydown", unlockAudio);
 }
 
 function applyTheme(theme) {
@@ -281,4 +324,5 @@ buildCoverflow();
 bindThemeToggle();
 bindStageInteraction();
 bindLightbox();
+bindAudioAutoplay();
 restartAutoplay();
